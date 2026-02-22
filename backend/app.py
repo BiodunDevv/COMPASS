@@ -61,11 +61,8 @@ app.secret_key = settings.SECRET_KEY
 # Production:  https://compass-two-iota.vercel.app
 try:
     from flask_cors import CORS
-    CORS(app, origins=[
-        "http://localhost:3000",
-        "https://compass-two-iota.vercel.app",
-    ], supports_credentials=True)
-    print("[app] CORS enabled for Next.js frontend.")
+    CORS(app, origins=list(settings.FRONTEND_ORIGINS), supports_credentials=True)
+    print(f"[app] CORS enabled for origins: {', '.join(settings.FRONTEND_ORIGINS)}")
 except ImportError:
     print("[app] flask-cors not installed — run: py -m pip install flask-cors")
 

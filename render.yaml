@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: compass-backend
+    runtime: python
+    plan: starter
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: gunicorn -w 2 -k gthread --threads 4 -b 0.0.0.0:$PORT --timeout 120 app:app
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FRONTEND_ORIGINS
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: mental_health_chatbot
+      - key: MONGO_COLLECTION
+        value: conversations
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: compass-redis
+          property: connectionString
+
+  - type: redis
+    name: compass-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru

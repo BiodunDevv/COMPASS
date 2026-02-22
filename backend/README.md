@@ -182,3 +182,30 @@ curl -X POST http://localhost:5000/send \
 - [ ] Add `Dockerfile` + `docker-compose.yml` for one-command local setup
 - [ ] Deploy to cloud (Render / Railway / GCP)
 - [ ] Evaluate model — report F1, accuracy per emotion class
+
+## Deploy Backend on Render
+
+### Option 1: Use the included `render.yaml` (recommended)
+
+1. Push this repository to GitHub.
+2. In Render, create a **Blueprint** and select the repo.
+3. Render will detect `render.yaml` and provision:
+   - a Python web service for Flask/Gunicorn
+   - a managed Redis instance
+4. Add the required environment values in Render:
+   - `SECRET_KEY`
+   - `MONGO_URI` (optional, but recommended for persistence)
+   - `MONGO_DB_NAME`
+   - `MONGO_COLLECTION`
+   - `FRONTEND_ORIGINS` (comma-separated list of allowed frontend URLs)
+5. Deploy and verify the health check at `/health`.
+
+### Option 2: Manual Render service setup
+
+- **Root Directory:** `backend`
+- **Build Command:** `pip install -r requirements.txt && python -m spacy download en_core_web_sm`
+- **Start Command:** `gunicorn -w 2 -k gthread --threads 4 -b 0.0.0.0:$PORT --timeout 120 app:app`
+- **Health Check Path:** `/health`
+- **Runtime:** Python 3.11+
+
+Then configure environment variables from `.env.example` in the Render dashboard.
