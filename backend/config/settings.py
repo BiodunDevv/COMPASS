@@ -19,6 +19,14 @@ class Settings:
     FLASK_ENV: str = field(default_factory=lambda: os.getenv("FLASK_ENV", "production"))
     SECRET_KEY: str = field(default_factory=lambda: os.getenv("SECRET_KEY", "change-me-in-production"))
     PORT: int = field(default_factory=lambda: int(os.getenv("PORT", 5000)))
+    FRONTEND_ORIGINS: tuple[str, ...] = field(default_factory=lambda: tuple(
+        origin.strip()
+        for origin in os.getenv(
+            "FRONTEND_ORIGINS",
+            "http://localhost:3000,https://compass-two-iota.vercel.app",
+        ).split(",")
+        if origin.strip()
+    ))
 
     # ── MongoDB ────────────────────────────────────────────────────────────
     MONGO_URI: str = field(default_factory=lambda: os.getenv(
